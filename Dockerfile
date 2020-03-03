@@ -1,4 +1,4 @@
-from php:7.2-alpine
+FROM php:7.2-alpine
 
 #ENV vars
 ENV DOWNLOAD=https://github.com/InvoicePlane/InvoicePlane/releases/download/v1.5.9/v1.5.9.zip
@@ -37,5 +37,4 @@ RUN chmod 755 entrypoint.sh
 
 #Startup
 WORKDIR ${INVOICEPLANE_DIR}
-expose 80
 ENTRYPOINT [ "/entrypoint.sh" ]
