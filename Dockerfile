@@ -10,7 +10,7 @@ WORKDIR ${IPDIR}
 RUN apk update && apk upgrade
 
 #Install PHP extensions
-#Using a script that simplies the installation by managing the dependencies
+#Using a script that simplifies the installation by managing the dependencies
 ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
 RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && \
     install-php-extensions gd hash json mbstring mcrypt mysqli openssl recode xmlrpc zlib
