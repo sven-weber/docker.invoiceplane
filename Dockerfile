@@ -2,7 +2,9 @@ from php:7.2-alpine
 
 #ENV vars
 ENV DOWNLOAD=https://github.com/InvoicePlane/InvoicePlane/releases/download/v1.5.9/v1.5.9.zip
-ENV DIR=/InvoicePlane
+ENV INVOICEPLANE_DIR=/InvoicePlane
+ENV INVOICEPLANE_URL=http://127.0.0.1:80
+ENV INVOICEPLANE_CONF=ipconfig.php
 
 #Updates
 RUN apk update && apk upgrade
@@ -19,17 +21,21 @@ RUN cd / && \
     wget -O files.zip ${DOWNLOAD} && \
     unzip files.zip -d / && \
     rm -f files.zip && \
-    mv ip ${DIR}
+    mv ip ${INVOICEPLANE_DIR}
 RUN apk del wget unzip
 
-#Setup App
-RUN cd ${DIR} && \
-    mv ipconfig.php.example ipconfig.php && \
-    sed -i 's IP_URL= IP_URL=http://0.0.0.0:80 ' ipconfig.php
+#Configuration
+RUN cd ${INVOICEPLANE_DIR} && \
+    mv ${INVOICEPLANE_CONF}.example ${INVOICEPLANE_CONF}
 
 #Volumes
 VOLUME [ "/InvoicePlane/uploads" ]
 
-WORKDIR ${DIR}
+#Startup scripts
+COPY entrypoint.sh entrypoint.sh
+RUN chmod 755 entrypoint.sh
+
+#Startup
+WORKDIR ${INVOICEPLANE_DIR}
 expose 80
-ENTRYPOINT [ "php", "-S", "0.0.0.0:80", "index.php" ]
+ENTRYPOINT [ "/entrypoint.sh" ]
