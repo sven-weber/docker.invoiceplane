@@ -4,6 +4,7 @@ FROM php:7.2-alpine
 ENV DOWNLOAD=https://github.com/InvoicePlane/InvoicePlane/releases/download/v1.5.9/v1.5.9.zip
 ENV INVOICEPLANE_DIR=/InvoicePlane
 ENV INVOICEPLANE_URL=http://127.0.0.1:80
+ENV INVOICEPLANE_TIMEZONE=Europe/Berlin
 ENV INVOICEPLANE_CONF=ipconfig.php
 
 #Updates
