@@ -23,6 +23,6 @@ echo "configured timezone: ${INVOICEPLANE_TIMEZONE}"
 
 #Start InvoicePlane
 PARSED_PORT="$(echo ${INVOICEPLANE_URL} | sed -nr 's,.*(:[0-9]+).*,\1,p')"
-command="php -S 0.0.0.0$PARSED_PORT index.php"
+command="php -S 0.0.0.0$PARSED_PORT -t ${INVOICEPLANE_DIR}"
 echo "Starting server, $command"
 exec $command
