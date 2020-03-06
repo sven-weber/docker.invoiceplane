@@ -1,20 +1,32 @@
-FROM php:7.2-alpine
+FROM alpine:edge
 
 #ENV vars
 ENV DOWNLOAD=https://github.com/InvoicePlane/InvoicePlane/releases/download/v1.5.9/v1.5.9.zip
-ENV INVOICEPLANE_DIR=/InvoicePlane
-ENV INVOICEPLANE_URL=http://127.0.0.1:80
+ENV INVOICEPLANE_DIR=/var/www/localhost/htdocs
+ENV INVOICEPLANE_URL=127.0.0.1:80
 ENV INVOICEPLANE_TIMEZONE=Europe/Berlin
 ENV INVOICEPLANE_CONF=ipconfig.php
 
-#Updates
-RUN apk update && apk upgrade
-
-#Install PHP extensions
-#Using a script that simplifies the installation by managing the dependencies
-ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
-RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && \
-    install-php-extensions gd hash json mbstring mcrypt mysqli openssl recode xmlrpc zlib
+#Install Updates and install apache 
+RUN apk update \
+    && apk upgrade \
+    && apk add apache2 \
+            php7 \
+            php7-apache2 \
+            ca-certificates \
+            openssl \
+            php7-gd \
+            php7-json \
+            php7-mbstring \
+            php7-mcrypt \
+            php7-mysqli \
+            php7-openssl \
+            php7-recode \
+            php7-recode \
+            php7-xmlrpc \
+            php7-zlib \
+            php7-ctype \
+            php7-session
 
 #Download and unzip files
 RUN apk add wget unzip
@@ -22,22 +34,34 @@ RUN cd / && \
     wget -O files.zip ${DOWNLOAD} && \
     unzip files.zip -d / && \
     rm -f files.zip && \
-    mv ip ${INVOICEPLANE_DIR}
+    mv -v ip/* ${INVOICEPLANE_DIR}
 RUN apk del wget unzip
 
-#Configuration
+#InvoicePlane Configuration
 RUN cd ${INVOICEPLANE_DIR} && \
     mv ${INVOICEPLANE_CONF}.example ${INVOICEPLANE_CONF}
 
-#Volumes
-VOLUME [ "/InvoicePlane/uploads" ]
-VOLUME [ "/InvoicePlane/application/views/invoice_templates"]
-VOLUME [ "/InvoicePlane/application/views/quote_templates"]
+#Configure Apache
+RUN echo "ServerName localhost" >> /etc/apache2/httpd.conf \
+    && sed -i "s/#LoadModule\ rewrite_module/LoadModule\ rewrite_module/" /etc/apache2/httpd.conf \
+    && sed -i "s/#LoadModule\ session_module/LoadModule\ session_module/" /etc/apache2/httpd.conf \
+    && sed -i "s/#LoadModule\ session_cookie_module/LoadModule\ session_cookie_module/" /etc/apache2/httpd.conf \
+    && sed -i "s/#LoadModule\ session_crypto_module/LoadModule\ session_crypto_module/" /etc/apache2/httpd.conf \
+    && sed -i "s/#LoadModule\ deflate_module/LoadModule\ deflate_module/" /etc/apache2/httpd.conf
+RUN chown -R apache:apache ${INVOICEPLANE_DIR}
 
-#Startup scripts
-COPY entrypoint.sh entrypoint.sh
-RUN chmod 755 entrypoint.sh
+#Replace Router.php for php 7.3 fix
+#See https://community.invoiceplane.com/t/topic/5348/12 for reference
+COPY Router.php ${INVOICEPLANE_DIR}/application/third_party/MX/
+
+#Volumes
+VOLUME [ "InvoicePlane/uploads" ]
+VOLUME [ "InvoicePlane/application/views/invoice_templates"]
+VOLUME [ "InvoicePlane/application/views/quote_templates"]
 
 #Startup
+EXPOSE 80
+COPY entrypoint.sh entrypoint.sh
+RUN chmod 755 entrypoint.sh
 WORKDIR ${INVOICEPLANE_DIR}
 ENTRYPOINT [ "/entrypoint.sh" ]

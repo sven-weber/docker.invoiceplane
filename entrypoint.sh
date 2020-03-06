@@ -17,10 +17,10 @@ echo "configured timezone: ${INVOICEPLANE_TIMEZONE}"
 #Create php.ini
 (
   echo "date.timezone = ${INVOICEPLANE_TIMEZONE}"
-) > /usr/local/etc/php/php.ini
+) > /etc/php7/php.ini
 
 #Start InvoicePlane
 PARSED_PORT="$(echo ${INVOICEPLANE_URL} | sed -nr 's,.*(:[0-9]+).*,\1,p')"
-command="php -S 0.0.0.0$PARSED_PORT -t ${INVOICEPLANE_DIR}"
+command="/usr/sbin/httpd -DFOREGROUND"
 echo "Starting server, $command"
 exec $command
