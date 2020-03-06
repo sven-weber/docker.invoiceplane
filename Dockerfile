@@ -31,6 +31,8 @@ RUN cd ${INVOICEPLANE_DIR} && \
 
 #Volumes
 VOLUME [ "/InvoicePlane/uploads" ]
+VOLUME [ "/InvoicePlane/application/views/invoice_templates"]
+VOLUME [ "/InvoicePlane/application/views/quote_templates"]
 
 #Startup scripts
 COPY entrypoint.sh entrypoint.sh
