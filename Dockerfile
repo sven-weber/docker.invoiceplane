@@ -11,6 +11,7 @@ ENV INVOICEPLANE_VIEWS=${INVOICEPLANE_DIR}/application/views
 
 #Install Updates and install apache 
 RUN apk update \
+    apk upgrade \
     && apk add apache2 \
             php7 \
             php7-apache2 \
@@ -51,7 +52,9 @@ RUN chown -R apache:apache ${INVOICEPLANE_DIR}
 
 #Replace Router.php for php 7.3 fix
 #See https://community.invoiceplane.com/t/topic/5348/12 for reference
+#And the Mdl_templates because of an error that would otherwise occure when calling the settings
 COPY Router.php ${INVOICEPLANE_DIR}/application/third_party/MX/
+COPY Mdl_templates.php ${INVOICEPLANE_DIR}/application/modules/invoices/models/
 
 #Volumes
 VOLUME [ "/var/www/localhost/htdocs/uploads" ]
