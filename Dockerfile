@@ -1,4 +1,4 @@
-FROM php:7.2-alpine
+FROM php:7.1-alpine
 
 #ENV vars
 ENV DOWNLOAD=https://github.com/InvoicePlane/InvoicePlane/releases/download/v1.5.9/v1.5.9.zip
@@ -11,7 +11,6 @@ ENV INVOICEPLANE_VIEWS=${INVOICEPLANE_DIR}/application/views
 
 #Install Updates and install apache 
 RUN apk update \
-    && apk upgrade \
     && apk add apache2 \
             php7-apache2 \
             ca-certificates \
