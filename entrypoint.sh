@@ -19,6 +19,10 @@ echo "configured timezone: ${INVOICEPLANE_TIMEZONE}"
   echo "date.timezone = ${INVOICEPLANE_TIMEZONE}"
 ) > /etc/php7/php.ini
 
+#Chown directories
+#exec chown -R :apache ${INVOICEPLANE_UPLOADS}
+#exec chown -R :apache ${INVOICEPLANE_VIEWS}
+
 #Start InvoicePlane
 PARSED_PORT="$(echo ${INVOICEPLANE_URL} | sed -nr 's,.*(:[0-9]+).*,\1,p')"
 command="/usr/sbin/httpd -DFOREGROUND"

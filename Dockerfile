@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM php:7.2-alpine
 
 #ENV vars
 ENV DOWNLOAD=https://github.com/InvoicePlane/InvoicePlane/releases/download/v1.5.9/v1.5.9.zip
@@ -6,12 +6,13 @@ ENV INVOICEPLANE_DIR=/var/www/localhost/htdocs
 ENV INVOICEPLANE_URL=127.0.0.1:80
 ENV INVOICEPLANE_TIMEZONE=Europe/Berlin
 ENV INVOICEPLANE_CONF=ipconfig.php
+ENV INVOICEPLANE_UPLOADS=${INVOICEPLANE_DIR}/uploads
+ENV INVOICEPLANE_VIEWS=${INVOICEPLANE_DIR}/application/views
 
 #Install Updates and install apache 
 RUN apk update \
     && apk upgrade \
     && apk add apache2 \
-            php7 \
             php7-apache2 \
             ca-certificates \
             openssl \
@@ -55,9 +56,9 @@ RUN chown -R apache:apache ${INVOICEPLANE_DIR}
 COPY Router.php ${INVOICEPLANE_DIR}/application/third_party/MX/
 
 #Volumes
-VOLUME [ "InvoicePlane/uploads" ]
-VOLUME [ "InvoicePlane/application/views/invoice_templates"]
-VOLUME [ "InvoicePlane/application/views/quote_templates"]
+VOLUME [ "/var/www/localhost/htdocs/uploads" ]
+VOLUME [ "/var/www/localhost/htdocs/application/views/invoice_templates"]
+VOLUME [ "/var/www/localhost/htdocs/application/views/quote_templates"]
 
 #Startup
 EXPOSE 80
